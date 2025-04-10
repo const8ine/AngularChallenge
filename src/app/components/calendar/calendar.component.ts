@@ -6,6 +6,7 @@ import { CalendarService } from 'src/app/services/calendar.service';
 import { WeatherService } from 'src/app/services/weather.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ReminderFormComponent } from '../reminder-form/reminder-form.component';
+import {Day} from '../../interfaces/day';
 
 
 @Component({
@@ -14,8 +15,8 @@ import { ReminderFormComponent } from '../reminder-form/reminder-form.component'
   styleUrls: ['./calendar.component.scss']
 })
 export class CalendarComponent implements OnInit, OnDestroy {
-
-  onDestroy$ = new Subject<boolean>();
+  private onDestroy$ = new Subject<boolean>();
+  public month: Day[] = [];
 
   constructor(
     private calendarService: CalendarService,
@@ -24,6 +25,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.month = this.calendarService.getDays();
+
     this.calendarService.list(new Date())
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((reminders: Reminder[]) => {

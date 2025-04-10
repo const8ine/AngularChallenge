@@ -9,5 +9,8 @@
  </button>
 </mat-toolbar>
 
-<!-- Create the calendar here -->
-<!-- ======================== -->
+<section class="calendar-grid">
+  <div *ngFor="let d of month" class="calendar-grid__cell">
+    <h3>{{ d.day }}</h3>
+  </div>
+</section>
