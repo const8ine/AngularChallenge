@@ -2,15 +2,11 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Reminder } from '../interfaces/reminder';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarService {
-
   reminders: Reminder[] = [];
-
-  constructor() { }
 
   create(data: Reminder): Reminder {
     return data;
