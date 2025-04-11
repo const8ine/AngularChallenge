@@ -60,5 +60,4 @@ export class CalendarComponent implements OnInit, OnDestroy {
       },
     });
   }
-
 }

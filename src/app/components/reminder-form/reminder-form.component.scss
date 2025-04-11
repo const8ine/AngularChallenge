@@ -1,0 +1,11 @@
+.form {
+  width: 100%;
+  min-width: 300px;
+  max-width: 480px;
+
+  &__row,
+  &__field,
+  button {
+    width: 100%;
+  }
+}

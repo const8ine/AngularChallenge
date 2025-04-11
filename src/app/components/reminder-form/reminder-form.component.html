@@ -1,1 +1,40 @@
-<p>Reminder form will be here :)</p>
+<form [formGroup]="form"
+      (ngSubmit)="saveForm(close)"
+      class="form">
+  <div class="form__row">
+    <mat-form-field appearance="fill" class="form__field">
+      <mat-label>Note</mat-label>
+      <textarea
+        matInput
+        formControlName="noteField"
+        rows="3"
+        maxlength="30"
+      ></textarea>
+      <mat-hint align="end">
+        {{ form.get('noteField')?.value?.length || 0 }}/30
+      </mat-hint>
+      <mat-error *ngIf="form.get('noteField')?.hasError('maxlength')">
+        Maximum 30 characters allowed.
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form__row">
+    <mat-form-field appearance="fill" class="form__field">
+      <mat-label>Color</mat-label>
+      <mat-select formControlName="colorField">
+        <mat-option *ngFor="let color of colorKeys | keyvalue" [value]="color.key">
+          {{ color.value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="form__row">
+    <button mat-raised-button
+            color="primary"
+            type="submit">
+      Save
+    </button>
+  </div>
+</form>

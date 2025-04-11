@@ -47,6 +47,7 @@ export class CalendarService {
   }
 
   create(data: Reminder): Reminder {
+    console.log(data);
     return data;
   }
 
@@ -55,7 +56,7 @@ export class CalendarService {
   }
 
   list(date: Date): Observable<Reminder[]> {
-    console.log(date);
+    console.log('reminder: ', date);
     return of(this.reminders);
   }
 
