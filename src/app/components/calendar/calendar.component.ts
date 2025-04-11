@@ -6,7 +6,8 @@ import { CalendarService } from 'src/app/services/calendar.service';
 import { WeatherService } from 'src/app/services/weather.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ReminderFormComponent } from '../reminder-form/reminder-form.component';
-import {Day} from '../../interfaces/day';
+import { Day } from '../../interfaces/day';
+import { weekDays } from './constants/week-days';
 
 
 @Component({
@@ -17,6 +18,7 @@ import {Day} from '../../interfaces/day';
 export class CalendarComponent implements OnInit, OnDestroy {
   private onDestroy$ = new Subject<boolean>();
   public month: Day[] = [];
+  public week = weekDays;
 
   constructor(
     private calendarService: CalendarService,
