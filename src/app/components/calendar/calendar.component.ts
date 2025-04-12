@@ -42,9 +42,22 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.onDestroy$.complete();
   }
 
-  openReminderForm(reminder?: Reminder): void {
+  public openReminderForm(reminder?: Reminder): void {
     this.matDialog.open(ReminderFormComponent, {
       data: reminder || null,
     });
+  }
+
+  public openReminderFormByDay(dayId: string): void {
+    const newReminder: Reminder = {
+      id: null,
+      text: null,
+      timestamp: null,
+      dayId,
+      time: null,
+      color: null
+    };
+
+    this.openReminderForm(newReminder);
   }
 }

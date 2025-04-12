@@ -1,11 +1,25 @@
+@import "../../../assets/styles/variables";
+
 .form {
   width: 100%;
-  min-width: 300px;
-  max-width: 480px;
+  min-width: $viewport-mobile-small;
+  max-width: $viewport-container-base;
 
   &__row,
   &__field,
   button {
     width: 100%;
+  }
+
+  input[type='time'] {
+    position: relative;
+    &::-webkit-calendar-picker-indicator {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      z-index: 1;
+      font-size: 24px;
+      transform: translateY(-50%);
+    }
   }
 }

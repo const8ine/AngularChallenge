@@ -13,15 +13,17 @@ import { reminderColors } from '../calendar/constants/reminder-colors';
 export class ReminderFormComponent implements OnInit {
   public form: FormGroup;
   public colorKeys = reminderColors;
+  private hasSaved = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Reminder,
     private dialogRef: MatDialogRef<ReminderFormComponent>,
     private fb: FormBuilder,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
   ) {
     this.form = this.fb.group({
       noteField: ['', [Validators.required, Validators.maxLength(30)]],
+      cityField: [''],
       colorField: [''],
       dayField: ['', Validators.required],
       timeField: ['', Validators.required]
@@ -35,11 +37,20 @@ export class ReminderFormComponent implements OnInit {
     this.days = this.calendarService.getDays()
       .filter(day => day.id !== null)
       .map(day => ({
-      id: day.id,
-      label: `${day.day} — ${day.weekDay}`
-    }));
+        id: day.id,
+        label: `${day.day} — ${day.weekDay}`
+      }));
 
-    this.dialogRef.beforeClosed().subscribe(_ => {
+    if (this.data) {
+      this.form.patchValue({
+        noteField: this.data.text ?? '',
+        colorField: this.data.color ?? '',
+        dayField: this.data.dayId ?? '',
+        timeField: this.data.time ?? ''
+      });
+    }
+
+    this.dialogRef.beforeClosed().subscribe(() => {
       this.saveForm();
     });
   }
@@ -54,13 +65,15 @@ export class ReminderFormComponent implements OnInit {
   }
 
   public saveForm(callbackFn?: () => void): void {
-    if (!this.form.valid) {
+    if (this.hasSaved || !this.form.valid) {
       return;
     }
 
+    this.hasSaved = true;
+
     const reminderText = this.form.get('noteField')?.value;
     const selectedColor = this.form.get('colorField')?.value;
-    const selectedDay = this.form.get('dayField')?.value; // e.g. "2025-04-04"
+    const selectedDay = this.data?.dayId ?? this.form.get('dayField')?.value; // e.g. "2025-04-04"
     const selectedTime = this.form.get('timeField')?.value; // e.g. "14:30"
     const reminderTimestamp = new Date();
     const reminderHash = this.hash([reminderText, reminderTimestamp.toString()]);
