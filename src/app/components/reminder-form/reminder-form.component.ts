@@ -22,11 +22,23 @@ export class ReminderFormComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       noteField: ['', [Validators.required, Validators.maxLength(30)]],
-      colorField: ['']
+      colorField: [''],
+      dayField: ['', Validators.required],
+      timeField: ['', Validators.required]
     });
+
   }
 
+  public days: { id: string; label: string }[] = [];
+
   ngOnInit(): void {
+    this.days = this.calendarService.getDays()
+      .filter(day => day.id !== null)
+      .map(day => ({
+      id: day.id,
+      label: `${day.day} — ${day.weekDay}`
+    }));
+
     this.dialogRef.beforeClosed().subscribe(_ => {
       this.saveForm();
     });
@@ -48,12 +60,17 @@ export class ReminderFormComponent implements OnInit {
 
     const reminderText = this.form.get('noteField')?.value;
     const selectedColor = this.form.get('colorField')?.value;
-    const reminderTime = new Date();
-    const reminderHash = this.hash([reminderText, reminderTime.toString()]);
+    const selectedDay = this.form.get('dayField')?.value; // e.g. "2025-04-04"
+    const selectedTime = this.form.get('timeField')?.value; // e.g. "14:30"
+    const reminderTimestamp = new Date();
+    const reminderHash = this.hash([reminderText, reminderTimestamp.toString()]);
+
     const reminder: Reminder = {
       id: reminderHash,
+      dayId: selectedDay,
+      time: selectedTime,
       text: reminderText,
-      dateTime: reminderTime,
+      timestamp: reminderTimestamp,
       color: selectedColor
     };
 

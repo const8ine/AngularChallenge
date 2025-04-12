@@ -3,6 +3,24 @@
       class="form">
   <div class="form__row">
     <mat-form-field appearance="fill" class="form__field">
+      <mat-label>Day</mat-label>
+      <mat-select formControlName="dayField">
+        <mat-option *ngFor="let day of days" [value]="day.id">
+          {{ day.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="form__row">
+    <mat-form-field appearance="fill" class="form__field">
+      <mat-label>Time</mat-label>
+      <input matInput type="time" formControlName="timeField">
+    </mat-form-field>
+  </div>
+
+  <div class="form__row">
+    <mat-form-field appearance="fill" class="form__field">
       <mat-label>Note</mat-label>
       <textarea
         matInput

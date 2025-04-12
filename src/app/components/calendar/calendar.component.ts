@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject} from 'rxjs';
 import { Reminder } from 'src/app/interfaces/reminder';
-import { CalendarService } from 'src/app/services/calendar.service';
-import { WeatherService } from 'src/app/services/weather.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ReminderFormComponent } from '../reminder-form/reminder-form.component';
 import { Day } from '../../interfaces/day';
 import { weekDays } from './constants/week-days';
-
+import { Store } from '@ngrx/store';
+import { CalendarState } from '../../store/calendar/calendar.state';
+import { loadDays } from '../../store/calendar/calendar.actions';
+import { selectDays } from '../../store/calendar/calendar.selectors';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-calendar',
@@ -17,47 +18,33 @@ import { weekDays } from './constants/week-days';
 })
 export class CalendarComponent implements OnInit, OnDestroy {
   private onDestroy$ = new Subject<boolean>();
-  public month: Day[] = [];
+  public month: Day[] = [{id: 'test', day: 1, weekDay: 'monday', reminders: []}];
   public week = weekDays;
 
   constructor(
-    private calendarService: CalendarService,
-    private weatherService: WeatherService,
+    private store: Store<CalendarState>,
     private matDialog: MatDialog,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.month = this.calendarService.getDays();
+    this.store.dispatch(loadDays());
 
-    this.calendarService.list(new Date())
+    this.store.select(selectDays)
       .pipe(takeUntil(this.onDestroy$))
-      .subscribe((reminders: Reminder[]) => {
-        reminders.map((reminder: Reminder) => {
-          return {
-            ...reminder,
-            weather: this.getWeather(reminder.city),
-          };
-        });
-        console.log(reminders);
+      .subscribe(days => {
+        console.log('ngOnInit', days);
+        this.month = days;
       });
   }
 
-  getWeather(city: string) {
-    const x = this.weatherService.getWeatherInformation(city);
-    console.log(x);
-    return x;
-  }
-
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.onDestroy$.next(true);
     this.onDestroy$.complete();
   }
 
-  openReminderForm(reminder?: Reminder) {
+  openReminderForm(reminder?: Reminder): void {
     this.matDialog.open(ReminderFormComponent, {
-      data: {
-        reminder,
-      },
+      data: reminder || null,
     });
   }
 }

@@ -59,6 +59,30 @@
         }
       }
 
+      .reminders {
+        width: 100%;
+      }
+
+      .reminder {
+        color: white;
+
+        &--red {
+          background-color: #ED4C67;
+        }
+
+        &--green {
+          background-color: #A3CB38;
+        }
+
+        &--yellow {
+          background-color: #FFC312;
+        }
+
+        &--purple {
+          background-color: #5758BB;
+        }
+      }
+
       &--dummy {
         background-color: white;
       }

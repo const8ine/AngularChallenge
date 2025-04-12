@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Reminder } from '../interfaces/reminder';
 import { Day } from '../interfaces/day';
 import { weekDays } from '../components/calendar/constants/week-days';
+import { selectRemindersByDayId } from '../store/calendar/calendar.selectors';
+import { Store } from '@ngrx/store';
+import { CalendarState } from '../store/calendar/calendar.state';
+import {addReminder, deleteReminder, updateReminder} from '../store/calendar/calendar.actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarService {
-  reminders: Reminder[] = [];
+  constructor(private store: Store<CalendarState>) {
+  }
 
   getDays(): Day[] {
     const now = new Date();
@@ -19,7 +24,7 @@ export class CalendarService {
 
     const days: Day[] = [];
     const fillInTrailingDays = () => {
-      days.push({ day: null, weekDay: null });
+      days.push({ id: null, day: null, weekDay: null, reminders: [] });
     };
 
     // Get the weekday index for the 1st of the month
@@ -33,8 +38,10 @@ export class CalendarService {
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       days.push({
+        id: new Date(year, month, day).toISOString().split('T')[0],
         day,
-        weekDay: weekday[date.getDay()]
+        weekDay: weekday[date.getDay()],
+        reminders: [],
       });
     }
 
@@ -46,22 +53,19 @@ export class CalendarService {
     return days;
   }
 
-  create(data: Reminder): Reminder {
-    console.log(data);
-    return data;
+  create(data: Reminder): void {
+    this.store.dispatch(addReminder({ reminder: data }));
   }
 
-  edit(data: Reminder): Reminder {
-    return data;
+  edit(data: Reminder): void {
+    this.store.dispatch(updateReminder({ reminder: data }));
   }
 
-  list(date: Date): Observable<Reminder[]> {
-    console.log('reminder: ', date);
-    return of(this.reminders);
+  delete(reminderId: string): void {
+    this.store.dispatch(deleteReminder({ id: reminderId }));
   }
 
-  delete(reminderId: string): boolean {
-    console.log(reminderId);
-    return true;
+  list(dayId: string): Observable<Reminder[]> {
+    return this.store.select(selectRemindersByDayId(dayId));
   }
 }

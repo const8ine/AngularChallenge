@@ -18,12 +18,26 @@
     </div>
   </div>
   <div class="calendar__grid">
-    <div *ngFor="let d of month" class="grid__cell"
+    <div *ngFor="let d of month"
+         class="grid__cell"
          [ngClass]="{
-       'grid__cell--weekend': d.weekDay === 'sunday' || d.weekDay == 'saturday',
-       'grid__cell--dummy' : d.day === null
-       }">
+           'grid__cell--weekend': d.weekDay === 'sunday' || d.weekDay == 'saturday',
+           'grid__cell--dummy' : d.day === null
+         }">
       <h3>{{ d.day }}</h3>
+
+      <div class="reminders" *ngIf="d.reminders.length">
+        <div *ngFor="let reminder of d.reminders"
+             class="reminder"
+             [ngClass]="{
+               'reminder--red' : reminder.color === 'red',
+               'reminder--green' : reminder.color === 'green',
+               'reminder--yellow' : reminder.color === 'yellow',
+               'reminder--purple' : reminder.color === 'purple'
+             }">
+          {{ reminder.text }}
+        </div>
+      </div>
     </div>
   </div>
 </section>
