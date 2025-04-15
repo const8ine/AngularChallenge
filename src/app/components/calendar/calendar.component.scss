@@ -1,5 +1,9 @@
 @import "../../../assets/styles/variables";
 
+$toolbar-height: 64px;
+$calendar-legend-height: 36px;
+$header-height: $toolbar-height + $calendar-legend-height;
+
 :host {
   display: grid;
   grid-template-rows: 64px 1fr;
@@ -7,6 +11,8 @@
 }
 
 .toolbar {
+  height: $toolbar-height;
+
   mat-toolbar {
     position: fixed;
     top: 0;
@@ -21,7 +27,7 @@
 .calendar {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: #{$calendar-legend-height} 1fr;
   height: 100%;
 
   &__header {
@@ -43,29 +49,32 @@
     height: 100%;
 
     .grid__cell {
-      $grid-padding: 10px;
+      $grid-padding: 5px;
+      $grid-rows: 5;
       position: relative;
-      height: 100%;
-      min-height: 100px;
+      height: calc((100vh - #{$header-height}) / #{$grid-rows});
+      min-height: 75px;
       background-color: $color-gray-200;
       box-shadow: 0 0 0 1px black;
+      transition: background-color .15s ease-in;
       padding: $grid-padding;
-      overflow-y: auto;
+      cursor: pointer;
 
       h3 {
         $marker-size: 24px;
-        position: absolute;
-        top: $grid-padding;
-        left: $grid-padding / 2;
+        position: relative;
+        display: block;
+        float: left;
+        left: 0;
         z-index: 1;
         height: $marker-size;
         min-width: $marker-size;
+        margin: 0;
         font-size: 1.3em;
         white-space: nowrap;
         font-weight: bold;
         line-height: $marker-size;
-        padding: 0 4px;
-        text-align: center;
+        text-align: left;
       }
 
       &--weekend {
@@ -77,66 +86,69 @@
       }
 
       .reminders {
-        width: 100%;
-      }
+        position: relative;
+        z-index: 1;
 
-      .reminder {
-        $height: 24px;
-        appearance: none;
-        display: block;
-        width: 100%;
-        height: $height;
-        padding: 2px;
-        border-radius: 3px;
-        color: $color-white;
-        line-height: $height;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        border: none;
-        cursor: pointer;
+        &,
+        &__list,
+        &__counter {
+          width: 100%;
+        }
 
-        &--placeholder {
-          opacity: 0;
-          background-color: rgba($color-blue-500, .15);
-          transition: opacity, background-color .15s ease-in;
+        &__list {
+          height: 3.6em;
+          overflow-y: hidden;
+        }
 
-          &:focus,
-          &:hover,
-          &:active {
-            background-color: rgba($color-blue-500, .25);
+        &__counter {
+          font-size: 80%;
+        }
+
+        .reminder {
+          appearance: none;
+          display: block;
+          width: 100%;
+          padding: 0 $grid-padding;
+          border-radius: 3px;
+          color: $color-white;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          border: none;
+          cursor: pointer;
+
+          &--red {
+            background-color: $reminder-color-red;
           }
-        }
 
-        &--red {
-          background-color: $reminder-color-red;
-        }
+          &--green {
+            background-color: $reminder-color-green;
+          }
 
-        &--green {
-          background-color: $reminder-color-green;
-        }
+          &--yellow {
+            background-color: $reminder-color-yellow;
+          }
 
-        &--yellow {
-          background-color: $reminder-color-yellow;
-        }
-
-        &--purple {
-          background-color: $reminder-color-purple;
+          &--purple {
+            background-color: $reminder-color-purple;
+          }
         }
       }
 
       .reminder + .reminder {
-        margin-top: 1px;
+        margin-top: 2px;
       }
 
-      &:hover,
-      &:focus {
-        .reminder.reminder--placeholder {
-          opacity: 1;
+      &:not(.grid__cell--dummy) {
+        &:focus,
+        &:hover,
+        &:active {
+          background-color: $color-blue-100;
         }
       }
 
       &--dummy {
+        cursor: default;
         background-color: $color-white;
       }
     }

@@ -13,6 +13,8 @@ import { reminderColors } from '../calendar/constants/reminder-colors';
 export class ReminderFormComponent implements OnInit {
   public form: FormGroup;
   public colorKeys = reminderColors;
+  public isExistent = false;
+  public days: { id: string; label: string }[] = [];
   private hasSaved = false;
 
   constructor(
@@ -28,10 +30,7 @@ export class ReminderFormComponent implements OnInit {
       dayField: ['', Validators.required],
       timeField: ['', Validators.required]
     });
-
   }
-
-  public days: { id: string; label: string }[] = [];
 
   ngOnInit(): void {
     this.days = this.calendarService.getDays()
@@ -40,6 +39,8 @@ export class ReminderFormComponent implements OnInit {
         id: day.id,
         label: `${day.day} — ${day.weekDay}`
       }));
+
+    this.isExistent = !!this.data?.id;
 
     if (this.data) {
       this.form.patchValue({
@@ -87,15 +88,27 @@ export class ReminderFormComponent implements OnInit {
       color: selectedColor
     };
 
-    console.log(reminder);
+    if (this.isExistent) {
+      this.calendarService.edit(reminder);
+    } else {
+      this.calendarService.create(reminder);
+    }
 
-    this.calendarService.create(reminder);
     if (callbackFn) {
       callbackFn.call(this);
     }
   }
 
-  public close(): void {
+  public closeAction(): void {
     this.dialogRef.close();
+  }
+
+  public saveAction(): void {
+    this.saveForm(() => this.closeAction());
+  }
+
+  public deleteAction(): void {
+    this.calendarService.delete(this.data.id);
+    this.closeAction();
   }
 }

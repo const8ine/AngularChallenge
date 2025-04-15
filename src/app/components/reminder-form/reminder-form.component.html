@@ -1,5 +1,4 @@
 <form [formGroup]="form"
-      (ngSubmit)="saveForm(close)"
       class="form">
   <div class="form__row">
     <mat-form-field appearance="fill" class="form__field">
@@ -49,7 +48,7 @@
       <mat-label>Color</mat-label>
       <mat-select formControlName="colorField">
         <mat-option *ngFor="let color of colorKeys | keyvalue" [value]="color.key">
-          {{ color.value }}
+          <i class="color-swatch color-swatch--{{color.key}}"></i> <span>{{ color.value }}</span>
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -58,8 +57,17 @@
   <div class="form__row">
     <button mat-raised-button
             color="primary"
-            type="submit">
+            type="button"
+            (click)="saveAction()">
       Save
+    </button>
+
+    <button mat-stroked-button
+            *ngIf="isExistent"
+            color="warn"
+            type="button"
+            (click)="deleteAction()">
+      Delete
     </button>
   </div>
 </form>

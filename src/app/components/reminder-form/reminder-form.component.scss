@@ -6,9 +6,18 @@
   max-width: $viewport-container-base;
 
   &__row,
-  &__field,
-  button {
+  &__field {
     width: 100%;
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+    button {
+      flex: 1 auto;
+    }
   }
 
   input[type='time'] {
@@ -21,5 +30,30 @@
       font-size: 24px;
       transform: translateY(-50%);
     }
+  }
+}
+
+.color-swatch {
+  display: inline-block;
+  vertical-align: middle;
+  height: 1em;
+  width: 1em;
+  border-radius: 50%;
+  margin-right: .8em;
+
+  &--red {
+    background-color: $reminder-color-red;
+  }
+
+  &--green {
+    background-color: $reminder-color-green;
+  }
+
+  &--yellow {
+    background-color: $reminder-color-yellow;
+  }
+
+  &--purple {
+    background-color: $reminder-color-purple;
   }
 }

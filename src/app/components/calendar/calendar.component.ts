@@ -20,6 +20,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
   private onDestroy$ = new Subject<boolean>();
   public month: Day[] = [{id: 'test', day: 1, weekDay: 'monday', reminders: []}];
   public week = weekDays;
+  public itemsLimit = 3;
 
   constructor(
     private store: Store<CalendarState>,
@@ -32,7 +33,6 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.store.select(selectDays)
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(days => {
-        console.log('ngOnInit', days);
         this.month = days;
       });
   }
@@ -48,7 +48,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-  public openReminderFormByDay(dayId: string): void {
+  public openReminderFormByDay(dayId: string, e: MouseEvent): void {
+    e.stopPropagation();
     const newReminder: Reminder = {
       id: null,
       text: null,
@@ -57,7 +58,6 @@ export class CalendarComponent implements OnInit, OnDestroy {
       time: null,
       color: null
     };
-
     this.openReminderForm(newReminder);
   }
 }
