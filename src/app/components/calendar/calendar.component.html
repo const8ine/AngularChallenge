@@ -20,7 +20,7 @@
   <div class="calendar__grid">
     <div *ngFor="let d of month"
          class="grid__cell"
-         (click)="openReminderFormByDay(d.id, $event)"
+         (click)="openReminderFormByDay(d.id)"
          [ngClass]="{
            'grid__cell--weekend': d.weekDay === 'sunday' || d.weekDay == 'saturday',
            'grid__cell--dummy' : d.day === null
@@ -31,7 +31,7 @@
         <ng-container *ngIf="d.reminders.length">
           <div class="reminders__list">
             <button *ngFor="let reminder of d.reminders | slice: 0:itemsLimit"
-                    (click)="openReminderForm(reminder)"
+                    (click)="openReminderForm(reminder); $event.stopPropagation()"
                     class="reminder"
                     [ngClass]="{
                'reminder--red' : reminder.color === 'red',

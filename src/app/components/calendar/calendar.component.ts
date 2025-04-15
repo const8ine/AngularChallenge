@@ -48,8 +48,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-  public openReminderFormByDay(dayId: string, e: MouseEvent): void {
-    e.stopPropagation();
+  public openReminderFormByDay(dayId: string): void {
     const newReminder: Reminder = {
       id: null,
       text: null,
