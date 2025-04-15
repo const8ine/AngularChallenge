@@ -24,8 +24,9 @@ export class CalendarEffects {
   loadDays$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CalendarActions.loadDays),
-      mergeMap(() => {
-        const days = this.calendarService.getDays();
+      withLatestFrom(this.store.select(selectDays)),
+      mergeMap(([_, existingDays]) => {
+        const days = this.calendarService.getDays(existingDays);
         return of(CalendarActions.setDays({ days }));
       }),
       catchError(() => of(CalendarActions.setDays({ days: [] })))

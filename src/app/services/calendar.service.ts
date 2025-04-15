@@ -15,37 +15,59 @@ export class CalendarService {
   constructor(private store: Store<CalendarState>) {
   }
 
-  getDays(): Day[] {
+  getDays(existingDays: Day[] = []): Day[] {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const weekday = weekDays;
 
+    const existingDayMap = new Map(existingDays.map(day => [day.id, day]));
+    const existingRemindersMap = new Map<string, Reminder>();
+
+    for (const day of existingDays) {
+      for (const reminder of day.reminders) {
+        if (!reminder?.id) {
+          continue;
+        }
+        const existing = existingRemindersMap.get(reminder.id);
+        if (!existing || (reminder.timestamp && reminder.timestamp > existing.timestamp)) {
+          existingRemindersMap.set(reminder.id, reminder);
+        }
+      }
+    }
+
     const days: Day[] = [];
+
     const fillInTrailingDays = () => {
       days.push({ id: null, day: null, weekDay: null, reminders: [] });
     };
 
-    // Get the weekday index for the 1st of the month
     const firstDayOfWeek = new Date(year, month, 1).getDay(); // 0 = Sunday
 
-    // Fill in placeholders before the first day
     for (let i = 0; i < firstDayOfWeek; i++) {
       fillInTrailingDays();
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
+      const id = date.toISOString().split('T')[0];
+      const existingDay = existingDayMap.get(id);
+
+      const mergedReminders = existingDay?.reminders.map(r => {
+        const updated = existingRemindersMap.get(r.id);
+        return updated || r;
+      }) ?? [];
+
       days.push({
-        id: new Date(year, month, day).toISOString().split('T')[0],
+        id,
         day,
         weekDay: weekday[date.getDay()],
-        reminders: [],
+        reminders: mergedReminders,
+        weatherForecast: existingDay?.weatherForecast ?? null,
       });
     }
 
-    // Fill in placeholders after the last day
     while (days.length % 7 !== 0) {
       fillInTrailingDays();
     }
