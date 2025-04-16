@@ -1,10 +1,45 @@
 # AngularChallenge
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.0.
+As the app uses old version of angular CLI, please ensure you have one installed on your machine.
+
+Please use Node v. 16 to run this project. We recommend you to install [nvm](https://github.com/nvm-sh/nvm). 
+
+## First-time setup
+
+```
+nvm install 16
+```
+
+```
+nvm use 16
+```
+
+```
+npm i
+```
+
+then
+
+```
+npm run start
+```
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+To start an app in development mode, run
+
+```
+nvm use 16
+```
+
+```
+npm run start
+```
+
+or run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+---
 
 ## Code scaffolding
 
