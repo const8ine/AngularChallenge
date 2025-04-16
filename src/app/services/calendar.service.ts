@@ -64,7 +64,6 @@ export class CalendarService {
         day,
         weekDay: weekday[date.getDay()],
         reminders: mergedReminders,
-        weatherForecast: existingDay?.weatherForecast ?? null,
       });
     }
 

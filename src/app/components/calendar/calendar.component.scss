@@ -45,12 +45,15 @@ $header-height: $toolbar-height + $calendar-legend-height;
   &__grid {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr)); // optimized for overflow inside a grid column
     height: 100%;
 
     .grid__cell {
       $grid-padding: 5px;
       $grid-rows: 5;
+      $reminder-height: 17px;
+      $reminders-gap: 2px;
+
       position: relative;
       height: calc((100vh - #{$header-height}) / #{$grid-rows});
       min-height: 75px;
@@ -96,7 +99,7 @@ $header-height: $toolbar-height + $calendar-legend-height;
         }
 
         &__list {
-          height: 3.6em;
+          height: ($reminder-height + $reminders-gap) * 3;
           overflow-y: hidden;
         }
 
@@ -105,17 +108,33 @@ $header-height: $toolbar-height + $calendar-legend-height;
         }
 
         .reminder {
+          $icon-size: $reminder-height;
+          position: relative;
           appearance: none;
           display: block;
           width: 100%;
-          padding: 0 $grid-padding;
+          height: $reminder-height;
+          line-height: $reminder-height;
+          padding: 0 #{$icon-size + $grid-padding} 0 $grid-padding;
           border-radius: 3px;
+          background-color: $color-gray-500;
           color: $color-white;
+          text-align: left;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           border: none;
           cursor: pointer;
+
+          &__weather-icon {
+            position: absolute;
+            top: 0;
+            right: $grid-padding / 2;
+            z-index: 1;
+            display: block;
+            height: $reminder-height;
+            width: auto;
+          }
 
           &--red {
             background-color: $reminder-color-red;
@@ -136,7 +155,7 @@ $header-height: $toolbar-height + $calendar-legend-height;
       }
 
       .reminder + .reminder {
-        margin-top: 2px;
+        margin-top: $reminders-gap;
       }
 
       &:not(.grid__cell--dummy) {

@@ -55,7 +55,9 @@ export class CalendarComponent implements OnInit, OnDestroy {
       timestamp: null,
       dayId,
       time: null,
-      color: null
+      city: null,
+      color: null,
+      weatherForecast: null,
     };
     this.openReminderForm(newReminder);
   }

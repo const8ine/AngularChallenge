@@ -4,6 +4,10 @@ import { Reminder } from 'src/app/interfaces/reminder';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CalendarService } from '../../services/calendar.service';
 import { reminderColors } from '../calendar/constants/reminder-colors';
+import { WeatherService } from '../../services/weather.service';
+import { WeatherForecast } from '../../interfaces/wearher-forecast';
+import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-reminder-form',
@@ -15,13 +19,16 @@ export class ReminderFormComponent implements OnInit {
   public colorKeys = reminderColors;
   public isExistent = false;
   public days: { id: string; label: string }[] = [];
+  public weatherForecast: WeatherForecast | null = null;
   private hasSaved = false;
+  private formUpdate$: Subject<void> = new Subject<void>();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Reminder,
     private dialogRef: MatDialogRef<ReminderFormComponent>,
     private fb: FormBuilder,
     private calendarService: CalendarService,
+    private weatherService: WeatherService,
   ) {
     this.form = this.fb.group({
       noteField: ['', [Validators.required, Validators.maxLength(30)]],
@@ -45,11 +52,26 @@ export class ReminderFormComponent implements OnInit {
     if (this.data) {
       this.form.patchValue({
         noteField: this.data.text ?? '',
+        cityField: this.data.city ?? '',
         colorField: this.data.color ?? '',
         dayField: this.data.dayId ?? '',
         timeField: this.data.time ?? ''
       });
     }
+
+    this.form.valueChanges.pipe(
+      debounceTime(300),
+      map(({ cityField, dayField, timeField }) => ({ cityField, dayField, timeField })),
+      filter(({ cityField, dayField, timeField }) => !!cityField && !!dayField && !!timeField),
+      distinctUntilChanged((prev, curr) =>
+        prev.cityField === curr.cityField &&
+        prev.dayField === curr.dayField &&
+        prev.timeField === curr.timeField
+      ),
+      takeUntil(this.formUpdate$)
+    ).subscribe(({ cityField, dayField, timeField }) => {
+      this.onUpdate(cityField, dayField, timeField);
+    });
 
     this.dialogRef.beforeClosed().subscribe(() => {
       this.saveForm();
@@ -72,6 +94,7 @@ export class ReminderFormComponent implements OnInit {
 
     this.hasSaved = true;
 
+    const reminderCity = this.form.get('cityField')?.value;
     const reminderText = this.form.get('noteField')?.value;
     const selectedColor = this.form.get('colorField')?.value;
     const selectedDay = this.data?.dayId ?? this.form.get('dayField')?.value; // e.g. "2025-04-04"
@@ -85,7 +108,9 @@ export class ReminderFormComponent implements OnInit {
       time: selectedTime,
       text: reminderText,
       timestamp: reminderTimestamp,
-      color: selectedColor
+      city: reminderCity,
+      color: selectedColor,
+      weatherForecast: null,
     };
 
     if (this.isExistent) {
@@ -99,16 +124,42 @@ export class ReminderFormComponent implements OnInit {
     }
   }
 
-  public closeAction(): void {
+  public onClose(): void {
     this.dialogRef.close();
   }
 
-  public saveAction(): void {
-    this.saveForm(() => this.closeAction());
+  public onSave(): void {
+    this.saveForm(() => this.onClose());
   }
 
-  public deleteAction(): void {
+  public onDelete(): void {
     this.calendarService.delete(this.data.id);
-    this.closeAction();
+    this.onClose();
+  }
+
+  onUpdate(city: string, day: string, time: string): void {
+    const date = new Date(`${day}T${time}`);
+
+    this.weatherService.getWeatherInformation(city, date, time).subscribe((weather) => {
+      this.weatherForecast = weather;
+
+      const reminderText = this.form.get('noteField')?.value;
+      const selectedColor = this.form.get('colorField')?.value;
+      const reminderId = this.isExistent ? this.data.id : this.hash([reminderText, date.toString()]);
+      const timestamp = new Date();
+
+      const updatedReminder: Reminder = {
+        id: reminderId,
+        dayId: day,
+        time,
+        text: reminderText,
+        timestamp,
+        city,
+        color: selectedColor,
+        weatherForecast: weather,
+      };
+
+      this.calendarService.edit(updatedReminder);
+    });
   }
 }

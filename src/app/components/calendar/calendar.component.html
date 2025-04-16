@@ -40,6 +40,10 @@
                'reminder--purple' : reminder.color === 'purple'
              }">
               {{ reminder.text }}
+              <img *ngIf="reminder.weatherForecast?.iconUrl !== null"
+                   [src]="reminder.weatherForecast?.iconUrl"
+                   alt="weather"
+                   class="reminder__weather-icon">
             </button>
           </div>
           <p class="reminders__counter" *ngIf="d.reminders.length > itemsLimit"

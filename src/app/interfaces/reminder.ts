@@ -1,4 +1,5 @@
 import { reminderColors } from '../components/calendar/constants/reminder-colors';
+import { WeatherForecast } from './wearher-forecast';
 
 export interface Reminder {
   id: string;
@@ -7,6 +8,7 @@ export interface Reminder {
   dayId: string;
   time: string;
   color: keyof typeof reminderColors;
-  city?: string;
+  city: string;
+  weatherForecast: WeatherForecast | null;
 }
 
